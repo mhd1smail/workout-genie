@@ -5,7 +5,7 @@ const mysql = require('mysql2/promise');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
-const { protect } = require('./middleware/authMiddleware');
+const { protect } = require('./authMiddleware');
 
 // 2. Setup App
 const app = express();
