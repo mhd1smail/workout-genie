@@ -1,0 +1,580 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --bg-color: #0c0a1f;
+  --card-bg: rgba(18, 16, 47, 0.45);
+  --primary-glow: #eaafc8;
+  --secondary-glow: #654ea3;
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --border-color: rgba(255, 255, 255, 0.18);
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+  margin: 0;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.background-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('https://www.transparenttextures.com/patterns/stardust.png');
+  animation: move-background 120s linear infinite;
+  z-index: -1;
+}
+
+@keyframes move-background {
+  from {
+    background-position: 0 0;
+  }
+
+  to {
+    background-position: 1000px 1000px;
+  }
+}
+
+.content-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 1.5rem;
+}
+
+.genie-placeholder {
+  animation: floatAnimation 6s ease-in-out infinite;
+}
+
+#genieImage2,
+#genieImage,
+#modalGenieImage {
+  max-width: 100%;
+  height: auto;
+  max-height: 80vh;
+  filter: drop-shadow(0 0 25px rgba(0, 225, 255, 0.2));
+  transition: opacity 0.5s ease-in-out;
+}
+
+@keyframes floatAnimation {
+
+  0%,
+  100% {
+    transform: translateY(-10px);
+  }
+
+  50% {
+    transform: translateY(10px);
+  }
+}
+
+.glass-card {
+  background: var(--card-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 20px;
+  border: 1px solid var(--border-color);
+  padding: 2.5rem;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.main-heading {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.sub-heading {
+  font-weight: 300;
+  color: var(--text-secondary);
+}
+
+.gradient-btn {
+  background-image: linear-gradient(to right, var(--secondary-glow) 0%, var(--primary-glow) 51%, var(--secondary-glow) 100%);
+  padding: 12px 30px;
+  text-align: center;
+  text-transform: uppercase;
+  transition: 0.5s;
+  background-size: 200% auto;
+  color: white;
+  border-radius: 50px;
+  border: none;
+  font-weight: 700;
+  box-shadow: 0 4px 15px 0 rgba(234, 175, 200, 0.3);
+}
+
+.gradient-btn:hover {
+  background-position: right center;
+}
+
+.gradient-btn:disabled {
+  background-image: none;
+  background-color: #555;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.glass-input {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+}
+
+.glass-input:focus {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  box-shadow: 0 0 15px rgba(101, 78, 163, 0.5);
+  border-color: rgba(101, 78, 163, 0.7);
+}
+
+.glass-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.form-switch-text a {
+  color: var(--primary-glow);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.form-switch-text a:hover {
+  text-decoration: underline;
+}
+
+.progress-container {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 5px;
+  height: 8px;
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: var(--primary-glow);
+  border-radius: 5px;
+  transition: width 0.4s ease;
+}
+
+.form-step {
+  display: none;
+  opacity: 0;
+  transition: opacity 0.4s ease-in-out;
+}
+
+.form-step.active-step {
+  display: block;
+  opacity: 1;
+}
+
+.glass-card-nav {
+  padding: 0.5rem 1.5rem;
+  border-radius: 20px;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 1rem;
+  border-radius: 15px;
+  text-align: center;
+  height: 100%;
+}
+
+.stat-card h5 {
+  font-weight: 300;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.stat-card p {
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  font-size: 2rem;
+}
+
+.large-action-btn {
+  padding: 1.2rem;
+  font-size: 1.1rem;
+}
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(5px);
+  z-index: 1040;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  pointer-events: none;
+}
+
+.modal-backdrop.visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.modal-content {
+  width: 100%;
+  max-width: 500px;
+  background: var(--card-bg);
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.modal-content #modalGenieImage {
+  max-height: 200px;
+  width: auto;
+  margin-bottom: -30px;
+}
+
+.loader {
+  border: 4px solid rgba(255, 255, 255, 0.2);
+  border-top: 4px solid var(--primary-glow);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.dashboard-container {
+  position: relative;
+  display: flex;
+  width: 100%;
+  margin: 0 auto;
+  flex-grow: 1;
+  overflow: hidden;
+}
+
+.dashboard-view {
+  flex: 0 0 100%;
+  width: 100%;
+  transition: transform 0.4s ease-in-out;
+}
+
+.dashboard-container.is-detail-view-active .dashboard-view {
+  transform: translateX(-100%);
+}
+
+#detailView {
+  position: absolute;
+  top: 0;
+  left: 100%;
+  height: 100%;
+  background: var(--card-bg);
+}
+
+.btn-nav {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+}
+
+.back-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: auto;
+  border-radius: 20px;
+  padding: 5px 15px;
+  z-index: 10;
+}
+
+.workout-list {
+  max-height: 45vh;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.exercise-item {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.exercise-item:hover {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.gif-container {
+  position: relative;
+  width: 100%;
+  min-height: 250px;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gif-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.gif-container .overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.target-muscle-badge {
+  display: inline-block;
+  background-color: var(--secondary-glow);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+}
+
+.big-quote {
+  font-size: 1.5rem;
+  font-weight: 300;
+  color: var(--text-secondary);
+  transition: opacity 0.5s ease-in-out;
+  margin-top: auto;
+}
+
+@keyframes fadeInOut {
+
+  0%,
+  100% {
+    opacity: 0;
+  }
+
+  10%,
+  90% {
+    opacity: 1;
+  }
+}
+
+.big-quote.fading {
+  animation: fadeInOut 5s linear infinite;
+}
+
+/* Mobile-specific styles */
+@media (max-width: 991px) {
+  body {
+    overflow: auto;
+  }
+
+  .content-wrapper {
+    padding: 0;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .genie-placeholder-container {
+    height: 40vh;
+    margin-bottom: -50px;
+  }
+
+  .glass-card {
+    margin-top: 0px;
+    padding: 1.5rem;
+  }
+
+  .glass-card2 {
+    margin-top: -50px;
+  }
+
+  .genie-placeholder-container {
+    height: 25vh;
+    margin-bottom: 0;
+  }
+
+  .workout-card-wrapper {
+    width: 100%;
+    margin-top: 0;
+  }
+
+  .main-heading {
+    font-size: 1.5rem;
+  }
+
+  .sub-heading {
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+
+  .stat-card p {
+    font-size: 1.5rem;
+  }
+
+  .large-action-btn {
+    padding: 0.8rem;
+    font-size: 0.9rem;
+  }
+
+  /* Hide long text on mobile */
+  .d-lg-flex {
+    display: none !important;
+  }
+
+  .d-lg-none {
+    display: block !important;
+  }
+
+  /* Modal styling for mobile */
+  .modal-content {
+    max-width: 90%;
+    margin: 1rem;
+    padding: 1.5rem;
+  }
+
+  .modal-backdrop {
+    padding: 1rem;
+  }
+
+  /* Better GIF container for mobile */
+  .gif-container {
+    min-height: 200px;
+  }
+
+  .gif-container img {
+    max-height: 200px;
+    object-fit: contain;
+  }
+
+  /* Adjust navigation for mobile */
+  .navbar-nav {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .nav-item {
+    margin: 0.5rem 0;
+  }
+
+  /* Make buttons full width on mobile */
+  .btn-nav {
+    width: 60px;
+    height: 50px;
+    padding: 0;
+    border-radius: 60px;
+  }
+
+  .back-btn {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    padding: 5px 10px;
+    font-size: 0.8rem;
+  }
+
+  /* Mobile quote styling */
+  .big-quote {
+    font-size: 1.2rem;
+    margin-top: 1rem;
+  }
+
+  /* Exercise list styling for mobile */
+  .exercise-item {
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Plan summary modal */
+  #summaryModal .modal-content {
+    padding: 1.5rem;
+  }
+
+  #summaryModal .main-heading {
+    font-size: 1.3rem;
+  }
+
+  #summaryModal .sub-heading {
+    font-size: 0.9rem;
+  }
+
+  #mobilePlanSummary {
+    white-space: pre-wrap;
+    overflow-y: auto;
+    max-height: 300px;
+    padding: 1rem;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  #showSummaryBtn {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  #closeSummaryBtn {
+    margin-top: 1rem;
+  }
+
+  .carddoni {
+    margin-top: -100px;
+  }
+
+  .carddoni2 {
+    margin-top: -50px;
+  }
+}
+
+/* Add this to your existing CSS */
+.gif-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: opacity 0.3s ease;
+}
+
+.gif-container img.loaded {
+  opacity: 1;
+}
+
+.gif-container .overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.5);
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.gif-container img.loaded+.overlay {
+  opacity: 0;
+  pointer-events: none;
+}

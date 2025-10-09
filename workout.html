@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Workout Genie - Your Workout</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<body>
+  <div class="background-container"></div>
+  <div class="content-wrapper">
+    <div class="container-fluid h-100">
+      <div class="row h-100">
+        <!-- Mobile: Hide sidebar on small screens -->
+        <div class="col-lg-4 d-none d-lg-flex flex-column text-center p-4">
+          <nav class="navbar navbar-expand glass-card-nav mb-4 navbar-dark d-none d-lg-flex">
+            <ul class="navbar-nav mr-auto flex-row justify-content-between w-100">
+              <li class="nav-item"><a class="nav-link text-white" href="home.html"><i class="fas fa-home me-1"></i>
+                  Home</a></li>
+              <li class="nav-item"><a class="nav-link text-white" href="index.html" id="logoutButtonSidebar"><i
+                    class="fas fa-sign-out-alt me-1"></i> Logout</a></li>
+            </ul>
+          </nav>
+          <div class="mb-4">
+            <!-- Space for content -->
+          </div>
+          <div class="genie-placeholder-container">
+            <div class="genie-placeholder">
+              <img id="genieImage"
+                src="https://ik.imagekit.io/tuf7vvv2d/Gemini_Generated_Image_2fh6742fh6742fh6-removebg.png?updatedAt=1759208045860"
+                alt="Workout Genie">
+            </div>
+          </div>
+          <div class="mt-auto">
+            <p id="bigQuote" class="big-quote text-center"></p>
+          </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="col-lg-8 col-12 d-flex flex-column p-4">
+          <!-- Mobile Navigation -->
+          <nav class="navbar navbar-expand glass-card-nav mb-0 navbar-dark d-lg-none">
+            <ul class="navbar-nav mr-auto flex-row justify-content-between w-100">
+              <li class="nav-item"><a class="nav-link text-white" href="home.html"><i class="fas fa-home me-1"></i>
+                  Home</a></li>
+              <li class="nav-item"><a class="nav-link text-white" href="index.html" id="logoutButtonMobile"><i
+                    class="fas fa-sign-out-alt me-1"></i> Logout</a></li>
+            </ul>
+          </nav>
+
+          <!-- Page Title -->
+          <div class="text-center my-4">
+            <h1 class="main-heading">Your Personalized Workout</h1>
+            <!-- Mobile: Show summary as "See More" button -->
+            <div class="d-lg-none">
+              <button id="showSummaryBtn" class="btn btn-outline-light btn-sm mt-2">See Plan Summary</button>
+            </div>
+            <p class="sub-heading d-none d-lg-flex" id="planSummary" style="max-width: 97%; margin: auto;"></p>
+          </div>
+
+          <!-- Mobile: Add genie image for smaller screens -->
+          <div class="col-lg-7 d-lg-none genie-placeholder-container">
+            <div class="genie-placeholder">
+              <img id="genieImage"
+                src="https://ik.imagekit.io/tuf7vvv2d/Gemini_Generated_Image_2fh6742fh6742fh6-removebg.png?updatedAt=1759208045860"
+                alt="Workout Genie" class="carddoni2">
+            </div>
+          </div>
+
+          <!-- Workout Dashboard -->
+          <div class="workout-card-wrapper carddoni">
+            <div id="dashboardContainer" class="dashboard-container d-none flex-grow-1">
+              <div id="dayView" class="dashboard-view glass-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <button id="prevDayBtn" class="btn-nav"><i class="fas fa-chevron-left"></i></button>
+                  <h2 class="main-heading text-center" id="dayTitle"></h2>
+                  <button id="nextDayBtn" class="btn-nav"><i class="fas fa-chevron-right"></i></button>
+                </div>
+                <div id="exerciseList" class="workout-list flex-grow-1"></div>
+              </div>
+              <div id="detailView" class="dashboard-view glass-card">
+                <button id="backBtn" class="btn-nav back-btn"><i class="fas fa-arrow-left"></i> Back</button>
+                <br class="d-lg-none" />
+                <div class="text-center mt-lg-3 mt-5">
+                  <h3 class="main-heading" id="detailTitle"></h3>
+                  <p class="sub-heading" id="detailReps"></p>
+                </div>
+                <div class="gif-container my-3">
+                  <img id="detailGif" src="" alt="Exercise GIF">
+                  <div class="overlay">Loading GIF...</div>
+                </div>
+                <div class="mt-auto text-center">
+                  <h5 class="sub-heading">Target Muscle</h5>
+                  <p id="detailTarget" class="target-muscle-badge"></p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mobile: Show plan summary in modal -->
+          <div id="summaryModal" class="modal-backdrop d-none">
+            <div class="modal-content glass-card">
+              <h2 class="main-heading mb-3">Plan Summary</h2>
+              <p id="mobilePlanSummary" class="sub-heading mb-4"></p>
+              <button type="button" id="closeSummaryBtn" class="btn btn-outline-light w-100">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+
+</html>
