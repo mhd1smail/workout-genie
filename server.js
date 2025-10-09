@@ -5,7 +5,7 @@ const mysql = require('mysql2/promise');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
-const { protect } = require('./authMiddleware'); // <-- THIS IS THE CORRECTED LINE
+const { protect } = require('./authMiddleware.js'); // <-- THIS IS THE CORRECTED LINE
 
 // 2. Setup App
 const app = express();
@@ -339,7 +339,7 @@ app.get('/api/active-workout', protect, async (req, res) => {
           weeklySplit: []
         };
       }
-    } catch (parseError) {
+    } catch (parseEraror) {
       console.error("Error parsing plan_details:", parseError);
       return res.status(500).json({ error: "Invalid workout data format." });
     }
