@@ -5,7 +5,7 @@ const mysql = require('mysql2/promise');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
-const { protect } = require('./authMiddleware');
+const { protect } = require('./authMiddleware'); // <-- THIS IS THE CORRECTED LINE
 
 // 2. Setup App
 const app = express();
@@ -36,7 +36,7 @@ const dbConfig = {
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  ssl: { "rejectUnauthorized": true } // <-- ADD THIS LINE
+  ssl: { "rejectUnauthorized": true }
 };
 
 // 4. API Endpoints (Routes)
