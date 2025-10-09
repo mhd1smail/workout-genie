@@ -5,27 +5,30 @@ const mysql = require('mysql2/promise');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
-const { protect } = require('./authMiddleware.js'); // <-- THIS IS THE CORRECTED LINE
+const { protect } = require('./authMiddleware');
 
 // 2. Setup App
 const app = express();
 
-// A more secure CORS setup for production
+// --- CORS SETUP ---
+// Replace 'https://workout-geniee.vercel.app' with your actual frontend URL
 const allowedOrigins = [
-  'http://localhost:3000', // for local development if you have a separate frontend server
-  process.env.FRONTEND_URL  // Vercel will provide this URL
-];
+  'http://localhost:3000', // for local development
+  'https://workout-geniee.vercel.app', // your deployed frontend
+  process.env.FRONTEND_URL // optional: set in Vercel env vars
+].filter(Boolean); // removes null/undefined if FRONTEND_URL is not set
 
 app.use(cors({
   origin: function (origin, callback) {
-    // allow requests with no origin (like mobile apps or curl requests)
+    // Allow requests with no origin (like mobile apps, curl, Postman)
     if (!origin) return callback(null, true);
     if (allowedOrigins.indexOf(origin) === -1) {
       const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
       return callback(new Error(msg), false);
     }
     return callback(null, true);
-  }
+  },
+  credentials: true
 }));
 
 app.use(express.json());
@@ -38,6 +41,9 @@ const dbConfig = {
   database: process.env.DB_NAME,
   ssl: { "rejectUnauthorized": true }
 };
+
+// 🔍 DEBUG: Log which database we're connecting to
+console.log("✅ Server will connect to database:", process.env.DB_NAME || 'NOT SET');
 
 // 4. API Endpoints (Routes)
 
@@ -173,37 +179,22 @@ async function generateAndSaveWorkout(userId, connection) {
   }
 
   const geminiResult = await geminiResponse.json();
+  const rawText = geminiResult.candidates[0].content.parts[0].text.trim();
 
-  // Get the raw text response
-  const rawText = geminiResult.candidates[0].content.parts[0].text;
-
-  // Clean the text - remove any extra characters
-  let cleanedText = rawText.trim();
-
-  // Try to parse as JSON
   let planData;
   try {
-    planData = JSON.parse(cleanedText);
+    planData = JSON.parse(rawText);
   } catch (parseError) {
     console.error("Error parsing Gemini response:", parseError);
     console.log("Raw response:", rawText);
     throw new Error("Failed to parse Gemini response as JSON");
   }
 
-  // Validate planData structure
-  if (!planData || typeof planData !== 'object') {
-    throw new Error("Invalid planData structure from Gemini.");
-  }
-
   if (!planData.summary || !Array.isArray(planData.weeklySplit)) {
     throw new Error("Missing required fields in plan data");
   }
 
-  // Ensure planData is a plain object (no functions, no circular references)
-  const plainPlanData = JSON.parse(JSON.stringify(planData));
-
-  // Convert to string safely
-  const planDetailsString = JSON.stringify(plainPlanData);
+  const planDetailsString = JSON.stringify(planData);
 
   await connection.execute('UPDATE workouts SET is_active = FALSE WHERE user_id = ?', [userId]);
   await connection.execute(
@@ -308,7 +299,6 @@ app.post('/api/generate-workout', protect, async (req, res) => {
   }
 });
 
-
 // --- GET ACTIVE WORKOUT ROUTE ---
 app.get('/api/active-workout', protect, async (req, res) => {
   try {
@@ -321,25 +311,20 @@ app.get('/api/active-workout', protect, async (req, res) => {
     }
 
     const row = rows[0];
-
-    // Safely parse plan_details
     let planDetails = {};
     try {
       if (row.plan_details) {
         planDetails = JSON.parse(row.plan_details);
-
-        // Ensure we have a summary
         if (!planDetails.summary) {
           planDetails.summary = row.summary;
         }
       } else {
-        // Fallback if no plan_details
         planDetails = {
           summary: row.summary,
           weeklySplit: []
         };
       }
-    } catch (parseEraror) {
+    } catch (parseError) {
       console.error("Error parsing plan_details:", parseError);
       return res.status(500).json({ error: "Invalid workout data format." });
     }
@@ -349,6 +334,11 @@ app.get('/api/active-workout', protect, async (req, res) => {
     console.error(error);
     res.status(500).json({ error: "Failed to fetch active workout." });
   }
+});
+
+// --- HEALTH CHECK (Optional but useful) ---
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'OK', message: 'Server is running!' });
 });
 
 // 5. Start the Server
