@@ -11,12 +11,11 @@ const { protect } = require('./authMiddleware');
 const app = express();
 
 // --- CORS SETUP ---
-// Replace 'https://workout-geniee.vercel.app' with your actual frontend URL
+// Explicitly allow your frontend origins
 const allowedOrigins = [
   'http://localhost:3000', // for local development
-  'https://workout-geniee.vercel.app', // your deployed frontend
-  process.env.FRONTEND_URL // optional: set in Vercel env vars
-].filter(Boolean); // removes null/undefined if FRONTEND_URL is not set
+  'https://workout-geniee.vercel.app' // your deployed frontend
+];
 
 app.use(cors({
   origin: function (origin, callback) {
@@ -42,7 +41,7 @@ const dbConfig = {
   ssl: { "rejectUnauthorized": true }
 };
 
-// 🔍 DEBUG: Log which database we're connecting to
+// 🔍 Debug log to confirm database connection
 console.log("✅ Server will connect to database:", process.env.DB_NAME || 'NOT SET');
 
 // 4. API Endpoints (Routes)
@@ -336,9 +335,9 @@ app.get('/api/active-workout', protect, async (req, res) => {
   }
 });
 
-// --- HEALTH CHECK (Optional but useful) ---
+// --- HEALTH CHECK ENDPOINT (Optional but useful for debugging) ---
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'OK', message: 'Server is running!' });
+  res.json({ status: 'OK', message: 'Server is running!', database: process.env.DB_NAME });
 });
 
 // 5. Start the Server

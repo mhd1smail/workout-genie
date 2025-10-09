@@ -4,8 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- ARRAYS FOR ANIMATIONS ---
   const GENIE_IMAGES = [
-    "https://ik.imagekit.io/tuf7vvv2d/Gemini_Generated_Image_2fh6742fh6742fh6-removebg.png?updatedAt=1759208045860",
-    // Add more distinct image URLs here for variety
+    "https://ik.imagekit.io/tuf7vvv2d/Gemini_Generated_Image_2fh6742fh6742fh6-removebg.png?updatedAt=1759208045860"
   ];
   const MOTIVATIONAL_QUOTES = [
     "The pain you feel today is the strength you feel tomorrow.",
@@ -27,7 +26,25 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentWorkoutPlan = null;
   let currentDayIndex = 0;
 
-  // --- GLOBAL HELPER ---
+  // --- GLOBAL HELPER: Get Auth Token ---
+  function getAuthToken() {
+    return localStorage.getItem('authToken');
+  }
+
+  // --- GLOBAL HELPER: Fetch with Auth ---
+  async function fetchWithAuth(url, options = {}) {
+    const token = getAuthToken();
+    if (!token) {
+      throw new Error('No authentication token found.');
+    }
+    options.headers = {
+      ...options.headers,
+      'Authorization': `Bearer ${token}`
+    };
+    return fetch(url, options);
+  }
+
+  // --- GENIE ANIMATION HELPER ---
   function startGenieAnimation(imageId) {
     const genieImage = document.getElementById(imageId);
     if (genieImage && window.matchMedia('(min-width: 992px)').matches) {
@@ -48,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- PAGE-SPECIFIC LOGIC ---
 
-  // 1. Logic for Sign-Up / Sign-In Page (index.html)
+  // 1. Sign-Up / Sign-In Page (index.html)
   if (document.getElementById('signInView')) {
     startGenieAnimation('genieImage');
     startGenieAnimation('genieImage2');
@@ -120,10 +137,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 2. Logic for Multi-Step Details Page (details.html)
+  // 2. Multi-Step Details Page (details.html)
   if (document.getElementById('multiStepForm')) {
     startGenieAnimation('genieImage');
-    startGenieAnimation('genieImage2');
     const formContainer = document.getElementById('formContainer');
     const loadingContainer = document.getElementById('loadingContainer');
     const form = document.getElementById('multiStepForm');
@@ -173,8 +189,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
 
-      const token = localStorage.getItem('authToken');
-
       formContainer.classList.add('d-none');
       loadingContainer.classList.remove('d-none');
       startLoadingAnimations();
@@ -182,7 +196,10 @@ document.addEventListener('DOMContentLoaded', () => {
       try {
         const response = await fetch(`${API_BASE_URL}/update-profile`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${getAuthToken()}`
+          },
           body: JSON.stringify(formData)
         });
 
@@ -206,23 +223,23 @@ document.addEventListener('DOMContentLoaded', () => {
     showStep(currentStep);
   }
 
-  // 3. Logic for Home Page (home.html)
+  // 3. Home Page (home.html)
   if (document.querySelector('.stat-card')) {
     startGenieAnimation('genieImage');
-    startGenieAnimation('genieImage2');
-    const token = localStorage.getItem('authToken');
+    const token = getAuthToken();
+    if (!token) {
+      window.location.href = 'index.html';
+    }
+
     const viewWorkoutBtn = document.getElementById('viewWorkoutBtn');
 
     async function initializeHomePage() {
       try {
-        const homeDataResponse = await fetch(`${API_BASE_URL}/home-data`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
+        const homeDataResponse = await fetchWithAuth(`${API_BASE_URL}/home-data`);
         if (!homeDataResponse.ok) throw new Error('Could not fetch user data.');
         const data = await homeDataResponse.json();
 
         document.getElementById('welcomeMessage').textContent = `Welcome back, ${data.name}!`;
-
         document.getElementById('welcomeMessage2').textContent = `Welcome back, ${data.name}!`;
         document.getElementById('currentWeightDisplay').textContent = `${data.weight} kg`;
         document.getElementById('heightDisplay').textContent = `${data.height} cm`;
@@ -231,9 +248,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('nextWeekBtn').textContent = `Start Week ${data.weekCount + 1}`;
 
         try {
-          const workoutResponse = await fetch(`${API_BASE_URL}/active-workout`, {
-            headers: { 'Authorization': `Bearer ${token}` }
-          });
+          const workoutResponse = await fetchWithAuth(`${API_BASE_URL}/active-workout`);
           if (!workoutResponse.ok) {
             throw new Error('No active workout.');
           }
@@ -259,9 +274,8 @@ document.addEventListener('DOMContentLoaded', () => {
       viewWorkoutBtn.innerHTML = `Generating...`;
       viewWorkoutBtn.disabled = true;
       try {
-        const response = await fetch(`${API_BASE_URL}/generate-workout`, {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${token}` }
+        const response = await fetchWithAuth(`${API_BASE_URL}/generate-workout`, {
+          method: 'POST'
         });
         if (!response.ok) throw new Error('Failed to generate workout.');
 
@@ -288,17 +302,20 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 4. Logic for Next Week Page
+  // 4. Next Week Page
   if (document.getElementById('nextWeekForm')) {
     startGenieAnimation('genieImage');
-    startGenieAnimation('genieImage2');
+    const token = getAuthToken();
+    if (!token) {
+      window.location.href = 'index.html';
+    }
+
     const formContainer = document.getElementById('formContainer');
     const loadingContainer = document.getElementById('loadingContainer');
     const form = document.getElementById('nextWeekForm');
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const token = localStorage.getItem('authToken');
       const newWeight = document.getElementById('newWeightInput').value;
       if (!newWeight || isNaN(newWeight) || newWeight <= 0) {
         return alert("Please enter a valid number for your weight.");
@@ -309,9 +326,9 @@ document.addEventListener('DOMContentLoaded', () => {
       startLoadingAnimations();
 
       try {
-        const response = await fetch(`${API_BASE_URL}/start-next-week`, {
+        const response = await fetchWithAuth(`${API_BASE_URL}/start-next-week`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ newWeight })
         });
 
@@ -330,29 +347,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  function startGenieAnimation(imageId) {
-    const genieImage = document.getElementById(imageId);
-    if (genieImage && window.matchMedia('(min-width: 992px)').matches) {
-      let imageIndex = 0;
-      if (imageInterval) clearInterval(imageInterval);
-      imageInterval = setInterval(() => {
-        imageIndex = (imageIndex + 1) % GENIE_IMAGES.length;
-        genieImage.style.opacity = 0;
-        setTimeout(() => {
-          if (genieImage) {
-            genieImage.src = GENIE_IMAGES[imageIndex];
-            genieImage.style.opacity = 1;
-          }
-        }, 500);
-      }, 5000);
-    }
-  }
-
-  // 5. Logic for Workout Dashboard Page (workout.html)
+  // 5. Workout Dashboard Page (workout.html)
   if (document.getElementById('dashboardContainer')) {
-    startGenieAnimation('genieImageSidebar');
-    startGenieAnimation('genieImageMobile');
-    const token = localStorage.getItem('authToken');
+    startGenieAnimation('genieImage');
+    const token = getAuthToken();
+    if (!token) {
+      window.location.href = 'index.html';
+    }
 
     async function loadActiveWorkout() {
       const justGeneratedPlan = sessionStorage.getItem('generatedWorkoutPlan');
@@ -363,9 +364,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       try {
-        const response = await fetch(`${API_BASE_URL}/active-workout`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
+        const response = await fetchWithAuth(`${API_BASE_URL}/active-workout`);
         if (!response.ok) throw new Error('No active workout found. Go to Home to generate a plan.');
 
         const planData = await response.json();
@@ -398,7 +397,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function startLoadingAnimations() {
     startGenieAnimation('genieImage');
-    startGenieAnimation('genieImage2');
     const quoteElement = document.getElementById('motivationalQuote');
     let quoteIndex = 0;
 
@@ -427,13 +425,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const mobilePlanSummary = document.getElementById('mobilePlanSummary');
 
     if (planSummary) {
-      // For desktop: show full summary
       planSummary.textContent = currentWorkoutPlan.summary;
-
-      // For mobile: truncate summary if too long
       if (window.matchMedia('(max-width: 991px)').matches) {
-        const truncatedSummary = currentWorkoutPlan.summary.substring(0, 150) + '...';
-        planSummary.textContent = truncatedSummary;
+        const truncated = currentWorkoutPlan.summary.substring(0, 150) + '...';
+        planSummary.textContent = truncated;
       }
     }
 
@@ -446,21 +441,18 @@ document.addEventListener('DOMContentLoaded', () => {
     renderDayView(0);
     startQuoteCycling();
 
-    // Add event listeners for navigation buttons (moved to be inside initializeDashboard)
     document.getElementById('prevDayBtn').addEventListener('click', () => changeDay(-1));
     document.getElementById('nextDayBtn').addEventListener('click', () => changeDay(1));
     document.getElementById('backBtn').addEventListener('click', hideDetailView);
 
-    // Add mobile summary handler
     const showSummaryBtn = document.getElementById('showSummaryBtn');
     const closeSummaryBtn = document.getElementById('closeSummaryBtn');
     const summaryModal = document.getElementById('summaryModal');
-    const mobilePlanSummaryEl = document.getElementById('mobilePlanSummary');
 
-    if (showSummaryBtn && closeSummaryBtn && summaryModal && mobilePlanSummaryEl) {
+    if (showSummaryBtn && closeSummaryBtn && summaryModal) {
       showSummaryBtn.addEventListener('click', () => {
         if (currentWorkoutPlan && currentWorkoutPlan.summary) {
-          mobilePlanSummaryEl.textContent = currentWorkoutPlan.summary;
+          document.getElementById('mobilePlanSummary').textContent = currentWorkoutPlan.summary;
           summaryModal.classList.add('visible');
           summaryModal.style.opacity = 1;
           summaryModal.style.pointerEvents = 'all';
@@ -473,7 +465,6 @@ document.addEventListener('DOMContentLoaded', () => {
         summaryModal.style.pointerEvents = 'none';
       });
 
-      // Close modal when clicking outside
       summaryModal.addEventListener('click', (e) => {
         if (e.target === summaryModal) {
           summaryModal.classList.remove('visible');
@@ -519,7 +510,6 @@ document.addEventListener('DOMContentLoaded', () => {
     overlay.textContent = "Loading GIF...";
     overlay.style.display = 'flex';
 
-    // Set a timeout for loading indicator
     const timeoutId = setTimeout(() => {
       if (overlay.style.display === 'flex') {
         overlay.textContent = "GIF Not Available";
@@ -568,27 +558,24 @@ document.addEventListener('DOMContentLoaded', () => {
         quoteIndex = (quoteIndex + 1) % BIG_QUOTES.length;
         quoteElement.textContent = BIG_QUOTES[quoteIndex];
         quoteElement.style.opacity = 1;
-      }, 500); // 0.5s fade time
-    }, 5000); // 5s total cycle time
+      }, 500);
+    }, 5000);
   }
 
-  const GIPHY_API_URL = 'https://api.giphy.com/v1/gifs/search';
   async function fetchExerciseGif(exerciseName) {
     if (!GIPHY_API_KEY || GIPHY_API_KEY === 'YOUR_GIPHY_API_KEY') {
       console.warn("Giphy API Key is not set.");
       return '';
     }
     try {
-      const response = await fetch(`${GIPHY_API_URL}?api_key=${GIPHY_API_KEY}&q=${encodeURIComponent(exerciseName + ' exercise workout')}&limit=1&rating=g`);
+      const response = await fetch(`https://api.giphy.com/v1/gifs/search?api_key=${GIPHY_API_KEY}&q=${encodeURIComponent(exerciseName + ' exercise workout')}&limit=1&rating=g`);
       const data = await response.json();
       if (data.data && data.data.length > 0) {
         return data.data[0].images.downsized_large.url;
       }
-      // Fallback to a generic fitness GIF if no specific one found
       return 'https://media.giphy.com/media/3o7TKsQ8UJ7KmX3yR6/giphy.gif';
     } catch (error) {
       console.error("Error fetching GIF:", error);
-      // Return a default fitness GIF
       return 'https://media.giphy.com/media/3o7TKsQ8UJ7KmX3yR6/giphy.gif';
     }
   }
